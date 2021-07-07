@@ -11,35 +11,35 @@ import '../utils/youtube_player_controller.dart';
 import '../widgets/widgets.dart';
 
 var controllerProvider;
+
 /// Shows [YoutubePlayer] in fullScreen landscape mode.
 Future<void> showFullScreenYoutubePlayer({
-  @required BuildContext context,
-  @required YoutubePlayerController controller,
-  EdgeInsetsGeometry actionsPadding,
-  List<Widget> topActions,
-  List<Widget> bottomActions,
-  Widget bufferIndicator,
-  Duration controlsTimeOut,
-  Color liveUIColor,
-  VoidCallback onReady,
-  ProgressBarColors progressColors,
-  Widget thumbnail,
+  required BuildContext context,
+  required YoutubePlayerController controller,
+  EdgeInsetsGeometry? actionsPadding,
+  List<Widget>? topActions,
+  List<Widget>? bottomActions,
+  Widget? bufferIndicator,
+  Duration? controlsTimeOut,
+  Color? liveUIColor,
+  VoidCallback? onReady,
+  ProgressBarColors? progressColors,
+  Widget? thumbnail,
 }) async {
-
   final TransitionRoute<Null> route = PageRouteBuilder<Null>(
     pageBuilder: _fullScreenRoutePageBuilder,
   );
   controllerProvider = _FullScreenYoutubePlayer(
     controller: controller,
-    actionsPadding: actionsPadding,
-    topActions: topActions,
-    bottomActions: bottomActions,
-    bufferIndicator: bufferIndicator,
-    controlsTimeOut: controlsTimeOut,
-    liveUIColor: liveUIColor,
-    onReady: onReady,
-    progressColors: progressColors,
-    thumbnail: thumbnail,
+    actionsPadding: actionsPadding!,
+    topActions: topActions!,
+    bottomActions: bottomActions!,
+    bufferIndicator: bufferIndicator!,
+    controlsTimeOut: controlsTimeOut!,
+    liveUIColor: liveUIColor!,
+    onReady: onReady!,
+    progressColors: progressColors!,
+    thumbnail: thumbnail!,
   );
   SystemChrome.setEnabledSystemUIOverlays([]);
   SystemChrome.setPreferredOrientations([
@@ -48,20 +48,15 @@ Future<void> showFullScreenYoutubePlayer({
   ]);
 
   await Navigator.of(context, rootNavigator: true).push(route);
-
-
 }
 
 Widget _fullScreenRoutePageBuilder(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-
-    ) {
-
-    return _defaultRoutePageBuilder(
-        context, animation, secondaryAnimation, controllerProvider);
-
+  BuildContext context,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+) {
+  return _defaultRoutePageBuilder(
+      context, animation, secondaryAnimation, controllerProvider);
 }
 
 AnimatedWidget _defaultRoutePageBuilder(
@@ -71,18 +66,16 @@ AnimatedWidget _defaultRoutePageBuilder(
     var controllerProvider) {
   return AnimatedBuilder(
     animation: animation,
-    builder: (BuildContext context, Widget child) {
+    builder: (BuildContext context, Widget? child) {
       return _buildFullScreenVideo(context, animation, controllerProvider);
     },
   );
 }
 
 Widget _buildFullScreenVideo(
-    BuildContext context,
-    Animation<double> animation,
-    var controllerProvider) {
+    BuildContext context, Animation<double> animation, var controllerProvider) {
   return Scaffold(
-    resizeToAvoidBottomPadding: false,
+    //resizeToAvoidBottomPadding: false,
     body: Container(
       alignment: Alignment.center,
       color: Colors.black,
@@ -99,32 +92,32 @@ class _FullScreenYoutubePlayer extends StatefulWidget {
   final Duration controlsTimeOut;
 
   /// {@macro youtube_player_flutter.bufferIndicator}
-  final Widget bufferIndicator;
+  final Widget? bufferIndicator;
 
   /// {@macro youtube_player_flutter.progressColors}
-  final ProgressBarColors progressColors;
+  final ProgressBarColors? progressColors;
 
   /// {@macro youtube_player_flutter.onReady}
-  final VoidCallback onReady;
+  final VoidCallback? onReady;
 
   /// {@macro youtube_player_flutter.liveUIColor}
   final Color liveUIColor;
 
   /// {@macro youtube_player_flutter.topActions}
-  final List<Widget> topActions;
+  final List<Widget>? topActions;
 
   /// {@macro youtube_player_flutter.bottomActions}
-  final List<Widget> bottomActions;
+  final List<Widget>? bottomActions;
 
   /// {@macro youtube_player_flutter.actionsPadding}
   final EdgeInsetsGeometry actionsPadding;
 
   /// {@macro youtube_player_flutter.thumbnailUrl}
-  final Widget thumbnail;
+  final Widget? thumbnail;
 
   _FullScreenYoutubePlayer({
-    Key key,
-    @required this.controller,
+    Key? key,
+    required this.controller,
     this.controlsTimeOut = const Duration(seconds: 3),
     this.bufferIndicator,
     this.progressColors,
@@ -148,32 +141,30 @@ class _FullScreenYoutubePlayerState extends State<_FullScreenYoutubePlayer> {
       controller: widget.controller,
       showVideoProgressIndicator: false,
       actionsPadding: widget.actionsPadding,
-      bottomActions: widget.bottomActions,
-      bufferIndicator: widget.bufferIndicator,
+      bottomActions: widget.bottomActions!,
+      bufferIndicator: widget.bufferIndicator!,
       controlsTimeOut: widget.controlsTimeOut,
       liveUIColor: widget.liveUIColor,
-      onReady: widget.onReady,
-      progressColors: widget.progressColors,
-      thumbnail: widget.thumbnail,
-      topActions: widget.topActions,
+      onReady: widget.onReady!,
+      progressColors: widget.progressColors!,
+      thumbnail: widget.thumbnail!,
+      topActions: widget.topActions!,
     );
   }
 
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback(
+    SchedulerBinding.instance!.addPostFrameCallback(
       (_) => widget.controller.updateValue(
         widget.controller.value.copyWith(isFullScreen: true),
       ),
     );
-
   }
 
   @override
   void dispose() {
-
-    SchedulerBinding.instance.addPostFrameCallback(
+    SchedulerBinding.instance!.addPostFrameCallback(
       (_) => widget.controller.updateValue(
         widget.controller.value.copyWith(isFullScreen: false),
       ),
@@ -181,5 +172,3 @@ class _FullScreenYoutubePlayerState extends State<_FullScreenYoutubePlayer> {
     super.dispose();
   }
 }
-
-

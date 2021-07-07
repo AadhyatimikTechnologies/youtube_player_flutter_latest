@@ -15,10 +15,10 @@ import '../utils/youtube_player_controller.dart';
 /// Use [YoutubePlayer] instead.
 class RawYoutubePlayer extends StatefulWidget {
   /// Sets [Key] as an identification to underlying web view associated to the player.
-  final Key key;
+  final Key? key;
 
   /// {@macro youtube_player_flutter.onEnded}
-  final void Function(YoutubeMetaData metaData) onEnded;
+  final void Function(YoutubeMetaData metaData)? onEnded;
 
   /// Creates a [RawYoutubePlayer] widget.
   RawYoutubePlayer({
@@ -32,20 +32,20 @@ class RawYoutubePlayer extends StatefulWidget {
 
 class _RawYoutubePlayerState extends State<RawYoutubePlayer>
     with WidgetsBindingObserver {
-  YoutubePlayerController controller;
-  PlayerState _cachedPlayerState;
+  late YoutubePlayerController controller;
+  late PlayerState _cachedPlayerState;
   bool _isPlayerReady = false;
   bool _onLoadStopCalled = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
 
@@ -55,14 +55,14 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
       case AppLifecycleState.resumed:
         if (_cachedPlayerState != null &&
             _cachedPlayerState == PlayerState.playing) {
-          controller?.play();
+          controller.play();
         }
         break;
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.paused:
         _cachedPlayerState = controller.value.playerState;
-        controller?.pause();
+        controller.pause();
         break;
       default:
     }
@@ -70,21 +70,21 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
 
   @override
   Widget build(BuildContext context) {
-    controller = YoutubePlayerController.of(context);
+    controller = YoutubePlayerController.of(context)!;
     return IgnorePointer(
       ignoring: true,
       child: InAppWebView(
         key: widget.key,
         initialData: InAppWebViewInitialData(
           data: player,
-          baseUrl: 'https://www.youtube.com',
+          baseUrl: Uri.parse('https://www.youtube.com'),
           encoding: 'utf-8',
           mimeType: 'text/html',
         ),
         initialOptions: InAppWebViewGroupOptions(
           ios: IOSInAppWebViewOptions(allowsInlineMediaPlayback: true),
           crossPlatform: InAppWebViewOptions(
-            userAgent: userAgent,
+            userAgent: userAgent!,
             mediaPlaybackRequiresUserGesture: false,
             transparentBackground: true,
           ),
@@ -118,7 +118,7 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
                     break;
                   case 0:
                     if (widget.onEnded != null) {
-                      widget.onEnded(controller.metadata);
+                      widget.onEnded!(controller.metadata);
                     }
 
                     controller.updateValue(
@@ -377,9 +377,9 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
     </html>
   ''';
 
-  String boolean({@required bool value}) => value ? "'1'" : "'0'";
+  String boolean({required bool value}) => value ? "'1'" : "'0'";
 
-  String get userAgent => controller.flags.forceHD
+  String? get userAgent => controller.flags.forceHD
       ? 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'
       : null;
 }

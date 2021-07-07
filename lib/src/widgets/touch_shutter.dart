@@ -14,7 +14,7 @@ import '../utils/youtube_player_controller.dart';
 /// Also provides ability to seek video by dragging horizontally.
 class TouchShutter extends StatefulWidget {
   /// Overrides the default [YoutubePlayerController].
-  final YoutubePlayerController controller;
+  final YoutubePlayerController? controller;
 
   /// If true, disables the drag to seek functionality.
   ///
@@ -22,7 +22,7 @@ class TouchShutter extends StatefulWidget {
   final bool disableDragSeek;
 
   /// Sets the timeout until when the controls hide.
-  final Duration timeOut;
+  final Duration? timeOut;
 
   /// Creates [TouchShutter] widget.
   TouchShutter({
@@ -43,27 +43,27 @@ class _TouchShutterState extends State<TouchShutter> {
   String seekDuration = "";
   String seekPosition = "";
   bool _dragging = false;
-  Timer _timer;
+  late Timer _timer;
 
-  YoutubePlayerController _controller;
+  late YoutubePlayerController _controller;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _controller = YoutubePlayerController.of(context);
+    _controller = YoutubePlayerController.of(context)!;
     if (_controller == null) {
       assert(
         widget.controller != null,
         '\n\nNo controller could be found in the provided context.\n\n'
         'Try passing the controller explicitly.',
       );
-      _controller = widget.controller;
+      _controller = widget.controller!;
     }
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _timer.cancel();
     super.dispose();
   }
 
@@ -73,8 +73,8 @@ class _TouchShutterState extends State<TouchShutter> {
         isControlsVisible: !_controller.value.isControlsVisible,
       ),
     );
-    _timer?.cancel();
-    _timer = Timer(widget.timeOut, () {
+    _timer.cancel();
+    _timer = Timer(widget.timeOut!, () {
       if (!_controller.value.isDragging) {
         _controller.updateValue(
           _controller.value.copyWith(
