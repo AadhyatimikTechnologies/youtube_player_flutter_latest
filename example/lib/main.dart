@@ -54,12 +54,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  YoutubePlayerController _controller;
-  TextEditingController _idController;
-  TextEditingController _seekToController;
+  late YoutubePlayerController _controller;
+  late TextEditingController _idController;
+  late TextEditingController _seekToController;
 
-  PlayerState _playerState;
-  YoutubeMetaData _videoMetaData;
+  PlayerState? _playerState;
+  YoutubeMetaData? _videoMetaData;
   double _volume = 100;
   bool _muted = false;
   bool _isPlayerReady = false;
@@ -200,17 +200,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _space,
-                  _text('Title', _videoMetaData.title),
+                  _text('Title', _videoMetaData!.title),
                   _space,
-                  _text('Channel', _videoMetaData.author),
+                  _text('Channel', _videoMetaData!.author),
                   _space,
-                  _text('Video Id', _videoMetaData.videoId),
+                  _text('Video Id', _videoMetaData!.videoId),
                   _space,
                   Row(
                     children: [
                       _text(
                         'Playback Quality',
-                        _controller.value.playbackQuality,
+                        _controller.value.playbackQuality!,
                       ),
                       const Spacer(),
                       _text(
@@ -334,7 +334,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     duration: const Duration(milliseconds: 800),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20.0),
-                      color: _getStateColor(_playerState),
+                      color: _getStateColor(_playerState!),
                     ),
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
@@ -365,7 +365,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         children: [
           TextSpan(
-            text: value ?? '',
+            text: value != null ? value : '',
             style: const TextStyle(
               color: Colors.blueAccent,
               fontWeight: FontWeight.w300,
@@ -379,7 +379,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Color _getStateColor(PlayerState state) {
     switch (state) {
       case PlayerState.unknown:
-        return Colors.grey[700];
+        return Colors.grey[700]!;
       case PlayerState.unStarted:
         return Colors.pink;
       case PlayerState.ended:
@@ -391,7 +391,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case PlayerState.buffering:
         return Colors.yellow;
       case PlayerState.cued:
-        return Colors.blue[900];
+        return Colors.blue[900]!;
       default:
         return Colors.blue;
     }
@@ -409,8 +409,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   var id = YoutubePlayer.convertUrlToId(
                     _idController.text,
                   );
-                  if (action == 'LOAD') _controller.load(id);
-                  if (action == 'CUE') _controller.cue(id);
+                  if (action == 'LOAD') _controller.load(id!);
+                  if (action == 'CUE') _controller.cue(id!);
                   FocusScope.of(context).requestFocus(FocusNode());
                 } else {
                   _showSnackBar('Source can\'t be empty!');
@@ -436,7 +436,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _showSnackBar(String message) {
-    _scaffoldKey.currentState.showSnackBar(
+    _scaffoldKey.currentState!.showSnackBar(
       SnackBar(
         content: Text(
           message,
