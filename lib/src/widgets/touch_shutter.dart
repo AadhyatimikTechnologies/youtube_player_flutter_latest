@@ -43,7 +43,7 @@ class _TouchShutterState extends State<TouchShutter> {
   String seekDuration = "";
   String seekPosition = "";
   bool _dragging = false;
-  late Timer _timer;
+  Timer? _timer;
 
   late YoutubePlayerController _controller;
 
@@ -63,7 +63,7 @@ class _TouchShutterState extends State<TouchShutter> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer!.cancel();
     super.dispose();
   }
 
@@ -73,7 +73,7 @@ class _TouchShutterState extends State<TouchShutter> {
         isControlsVisible: !_controller.value.isControlsVisible,
       ),
     );
-    _timer.cancel();
+    _timer!.cancel();
     _timer = Timer(widget.timeOut!, () {
       if (!_controller.value.isDragging) {
         _controller.updateValue(
