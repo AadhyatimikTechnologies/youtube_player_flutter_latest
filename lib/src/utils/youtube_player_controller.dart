@@ -161,9 +161,7 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
   YoutubePlayerController({
     required this.initialVideoId,
     this.flags = const YoutubePlayerFlags(),
-  })  : assert(initialVideoId != null, 'initialVideoId can\'t be null.'),
-        assert(flags != null),
-        super(YoutubePlayerValue());
+  }) : super(YoutubePlayerValue());
 
   /// Finds [YoutubePlayerController] in the provided context.
 /*
@@ -319,8 +317,7 @@ class InheritedYoutubePlayer extends InheritedWidget {
     Key? key,
     required this.controller,
     required Widget child,
-  })  : assert(controller != null),
-        super(key: key, child: child);
+  }) : super(key: key, child: child);
 
   /// A [YoutubePlayerController] which controls the player.
   final YoutubePlayerController controller;

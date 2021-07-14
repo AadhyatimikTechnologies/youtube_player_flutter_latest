@@ -68,7 +68,7 @@ class YoutubePlayer extends StatefulWidget {
   ///
   /// Default is 3 seconds.
   /// {@endtemplate}
-  final Duration? controlsTimeOut;
+  final Duration controlsTimeOut;
 
   /// {@template youtube_player_flutter.bufferIndicator}
   /// Overrides the default buffering indicator for the player.
