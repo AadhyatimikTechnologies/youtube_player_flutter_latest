@@ -70,7 +70,7 @@ class ProgressBar extends StatefulWidget {
 }
 
 class _ProgressBarState extends State<ProgressBar> {
-  late YoutubePlayerController _controller;
+  YoutubePlayerController? _controller;
 
   Offset _touchPoint = Offset.zero;
 
@@ -92,23 +92,23 @@ class _ProgressBarState extends State<ProgressBar> {
       );
       _controller = widget.controller!;
     }
-    _controller.addListener(positionListener);
+    _controller!.addListener(positionListener);
     positionListener();
   }
 
   @override
   void dispose() {
-    _controller.removeListener(positionListener);
+    _controller!.removeListener(positionListener);
     super.dispose();
   }
 
   void positionListener() {
-    var _totalDuration = _controller.metadata.duration.inMilliseconds;
+    var _totalDuration = _controller!.metadata.duration.inMilliseconds;
     if (mounted && !_totalDuration.isFinite && _totalDuration != 0) {
       setState(() {
         _playedValue =
-            _controller.value.position.inMilliseconds / _totalDuration;
-        _bufferedValue = _controller.value.buffered;
+            _controller!.value.position.inMilliseconds / _totalDuration;
+        _bufferedValue = _controller!.value.buffered;
       });
     }
   }
@@ -131,26 +131,26 @@ class _ProgressBarState extends State<ProgressBar> {
     _touchPoint = box.globalToLocal(globalPosition);
     _checkTouchPoint();
     final relative = _touchPoint.dx / box.size.width;
-    _position = _controller.metadata.duration * relative;
-    _controller.seekTo(_position, allowSeekAhead: false);
+    _position = _controller!.metadata.duration * relative;
+    _controller!.seekTo(_position, allowSeekAhead: false);
   }
 
   void _dragEndActions() {
-    _controller.updateValue(
-      _controller.value.copyWith(isControlsVisible: false, isDragging: false),
+    _controller!.updateValue(
+      _controller!.value.copyWith(isControlsVisible: false, isDragging: false),
     );
-    _controller.seekTo(_position, allowSeekAhead: true);
+    _controller!.seekTo(_position, allowSeekAhead: true);
     setState(() {
       _touchDown = false;
     });
-    _controller.play();
+    _controller!.play();
   }
 
   Widget _buildBar() {
     return GestureDetector(
       onHorizontalDragDown: (details) {
-        _controller.updateValue(
-          _controller.value.copyWith(isControlsVisible: true, isDragging: true),
+        _controller!.updateValue(
+          _controller!.value.copyWith(isControlsVisible: true, isDragging: true),
         );
         _seekToRelativePosition(details.globalPosition);
         setState(() {

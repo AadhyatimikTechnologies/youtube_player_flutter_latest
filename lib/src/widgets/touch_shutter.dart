@@ -45,7 +45,7 @@ class _TouchShutterState extends State<TouchShutter> {
   bool _dragging = false;
   Timer? _timer;
 
-  late YoutubePlayerController _controller;
+  YoutubePlayerController? _controller;
 
   @override
   void didChangeDependencies() {
@@ -68,16 +68,16 @@ class _TouchShutterState extends State<TouchShutter> {
   }
 
   void _toggleControls() {
-    _controller.updateValue(
-      _controller.value.copyWith(
-        isControlsVisible: !_controller.value.isControlsVisible,
+    _controller!.updateValue(
+      _controller!.value.copyWith(
+        isControlsVisible: !_controller!.value.isControlsVisible,
       ),
     );
     _timer!.cancel();
     _timer = Timer(widget.timeOut!, () {
-      if (!_controller.value.isDragging) {
-        _controller.updateValue(
-          _controller.value.copyWith(
+      if (!_controller!.value.isDragging) {
+        _controller!.updateValue(
+          _controller!.value.copyWith(
             isControlsVisible: false,
           ),
         );
@@ -98,14 +98,14 @@ class _TouchShutterState extends State<TouchShutter> {
               dragStartPos = details.globalPosition.dx;
             },
             onHorizontalDragUpdate: (details) {
-              _controller.updateValue(
-                _controller.value.copyWith(
+              _controller!.updateValue(
+                _controller!.value.copyWith(
                   isControlsVisible: false,
                 ),
               );
               delta = details.globalPosition.dx - dragStartPos;
               seekToPosition =
-                  (_controller.value.position.inMilliseconds + delta * 1000)
+                  (_controller!.value.position.inMilliseconds + delta * 1000)
                       .round();
               setState(() {
                 seekDuration = (delta < 0 ? "- " : "+ ") +
@@ -116,7 +116,7 @@ class _TouchShutterState extends State<TouchShutter> {
               });
             },
             onHorizontalDragEnd: (_) {
-              _controller.seekTo(Duration(milliseconds: seekToPosition));
+              _controller!.seekTo(Duration(milliseconds: seekToPosition));
               setState(() {
                 _dragging = false;
               });
@@ -125,18 +125,18 @@ class _TouchShutterState extends State<TouchShutter> {
               scaleAmount = details.scale;
             },
             onScaleEnd: (_) {
-              if (_controller.value.isFullScreen) {
+              if (_controller!.value.isFullScreen) {
                 if (scaleAmount > 1) {
-                  _controller.fitWidth(MediaQuery.of(context).size);
+                  _controller!.fitWidth(MediaQuery.of(context).size);
                 }
                 if (scaleAmount < 1) {
-                  _controller.fitHeight(MediaQuery.of(context).size);
+                  _controller!.fitHeight(MediaQuery.of(context).size);
                 }
               }
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              color: _controller.value.isControlsVisible
+              color: _controller!.value.isControlsVisible
                   ? Colors.black.withAlpha(150)
                   : Colors.transparent,
               child: _dragging
