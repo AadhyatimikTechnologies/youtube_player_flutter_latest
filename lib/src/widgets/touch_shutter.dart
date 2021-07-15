@@ -50,14 +50,16 @@ class _TouchShutterState extends State<TouchShutter> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _controller = YoutubePlayerController.of(context)!;
-    if (_controller == null) {
+    final controller = YoutubePlayerController.of(context);
+    if (controller == null) {
       assert(
         widget.controller != null,
         '\n\nNo controller could be found in the provided context.\n\n'
         'Try passing the controller explicitly.',
       );
       _controller = widget.controller!;
+    } else {
+      _controller = controller;
     }
   }
 
