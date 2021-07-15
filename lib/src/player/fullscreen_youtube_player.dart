@@ -16,14 +16,14 @@ var controllerProvider;
 Future<void> showFullScreenYoutubePlayer({
   required BuildContext context,
   required YoutubePlayerController controller,
-  EdgeInsetsGeometry? actionsPadding,
+  required EdgeInsetsGeometry actionsPadding,
   List<Widget>? topActions,
   List<Widget>? bottomActions,
   Widget? bufferIndicator,
-  Duration? controlsTimeOut,
-  Color? liveUIColor,
+  required Duration controlsTimeOut,
+  required Color liveUIColor,
   VoidCallback? onReady,
-  ProgressBarColors? progressColors,
+  required ProgressBarColors progressColors,
   Widget? thumbnail,
 }) async {
   final TransitionRoute<Null> route = PageRouteBuilder<Null>(
@@ -31,14 +31,14 @@ Future<void> showFullScreenYoutubePlayer({
   );
   controllerProvider = _FullScreenYoutubePlayer(
     controller: controller,
-    actionsPadding: actionsPadding!,
+    actionsPadding: actionsPadding,
     topActions: topActions!,
     bottomActions: bottomActions!,
     bufferIndicator: bufferIndicator!,
-    controlsTimeOut: controlsTimeOut!,
-    liveUIColor: liveUIColor!,
+    controlsTimeOut: controlsTimeOut,
+    liveUIColor: liveUIColor,
     onReady: onReady!,
-    progressColors: progressColors!,
+    progressColors: progressColors,
     thumbnail: thumbnail!,
   );
   SystemChrome.setEnabledSystemUIOverlays([]);
