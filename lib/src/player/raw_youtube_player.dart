@@ -33,19 +33,19 @@ class RawYoutubePlayer extends StatefulWidget {
 class _RawYoutubePlayerState extends State<RawYoutubePlayer>
     with WidgetsBindingObserver {
   YoutubePlayerController? controller;
-  late PlayerState _cachedPlayerState;
+  PlayerState? _cachedPlayerState;
   bool _isPlayerReady = false;
   bool _onLoadStopCalled = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance?.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance?.removeObserver(this);
     super.dispose();
   }
 
@@ -55,14 +55,14 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
       case AppLifecycleState.resumed:
         if (_cachedPlayerState != null &&
             _cachedPlayerState == PlayerState.playing) {
-          controller!.play();
+          controller?.play();
         }
         break;
       case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.paused:
         _cachedPlayerState = controller!.value.playerState;
-        controller!.pause();
+        controller?.pause();
         break;
       default:
     }
@@ -70,7 +70,7 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
 
   @override
   Widget build(BuildContext context) {
-    controller = YoutubePlayerController.of(context)!;
+    controller = YoutubePlayerController.of(context);
     return IgnorePointer(
       ignoring: true,
       child: InAppWebView(
@@ -82,16 +82,30 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
           mimeType: 'text/html',
         ),
         initialOptions: InAppWebViewGroupOptions(
-          ios: IOSInAppWebViewOptions(allowsInlineMediaPlayback: true),
           crossPlatform: InAppWebViewOptions(
             userAgent: userAgent,
             mediaPlaybackRequiresUserGesture: false,
             transparentBackground: true,
+            disableContextMenu: true,
+            supportZoom: false,
+            disableHorizontalScroll: false,
+            disableVerticalScroll: false,
+            useShouldOverrideUrlLoading: true,
+          ),
+          ios: IOSInAppWebViewOptions(
+            allowsInlineMediaPlayback: true,
+            allowsAirPlayForMediaPlayback: true,
+            allowsPictureInPictureMediaPlayback: true,
+          ),
+          android: AndroidInAppWebViewOptions(
+            useWideViewPort: false,
+            useHybridComposition: controller!.flags.useHybridComposition,
           ),
         ),
         onWebViewCreated: (webController) {
           controller!.updateValue(
-              controller!.value.copyWith(webViewController: webController));
+            controller!.value.copyWith(webViewController: webController),
+          );
           webController
             ..addJavaScriptHandler(
               handlerName: 'Ready',
@@ -117,10 +131,7 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
                     );
                     break;
                   case 0:
-                    if (widget.onEnded != null) {
-                      widget.onEnded!(controller!.metadata);
-                    }
-
+                    widget.onEnded?.call(controller!.metadata);
                     controller!.updateValue(
                       controller!.value.copyWith(
                         playerState: PlayerState.ended,
@@ -282,7 +293,6 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
                     },
                 });
             }
-
             function sendPlayerStateChange(playerState) {
                 clearTimeout(timerId);
                 window.flutter_inappwebview.callHandler('StateChange', playerState);
@@ -291,7 +301,6 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
                     sendVideoData(player);
                 }
             }
-
             function sendVideoData(player) {
                 var videoData = {
                     'duration': player.getDuration(),
@@ -301,73 +310,59 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
                 };
                 window.flutter_inappwebview.callHandler('VideoData', videoData);
             }
-
             function startSendCurrentTimeInterval() {
                 timerId = setInterval(function () {
                     window.flutter_inappwebview.callHandler('VideoTime', player.getCurrentTime(), player.getVideoLoadedFraction());
                 }, 100);
             }
-
             function play() {
                 player.playVideo();
                 return '';
             }
-
             function pause() {
                 player.pauseVideo();
                 return '';
             }
-
             function loadById(loadSettings) {
                 player.loadVideoById(loadSettings);
                 return '';
             }
-
             function cueById(cueSettings) {
                 player.cueVideoById(cueSettings);
                 return '';
             }
-
             function loadPlaylist(playlist, index, startAt) {
                 player.loadPlaylist(playlist, 'playlist', index, startAt);
                 return '';
             }
-
             function cuePlaylist(playlist, index, startAt) {
                 player.cuePlaylist(playlist, 'playlist', index, startAt);
                 return '';
             }
-
             function mute() {
                 player.mute();
                 return '';
             }
-
             function unMute() {
                 player.unMute();
                 return '';
             }
-
             function setVolume(volume) {
                 player.setVolume(volume);
                 return '';
             }
-
             function seekTo(position, seekAhead) {
                 player.seekTo(position, seekAhead);
                 return '';
             }
-
             function setSize(width, height) {
                 player.setSize(width, height);
                 return '';
             }
-
             function setPlaybackRate(rate) {
                 player.setPlaybackRate(rate);
                 return '';
             }
-
             function setTopMargin(margin) {
                 document.getElementById("player").style.marginTop = margin;
                 return '';
@@ -377,7 +372,7 @@ class _RawYoutubePlayerState extends State<RawYoutubePlayer>
     </html>
   ''';
 
-  String boolean({required bool value}) => value ? "'1'" : "'0'";
+  String boolean({required bool value}) => value == true ? "'1'" : "'0'";
 
   String get userAgent => controller!.flags.forceHD
       ? 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'

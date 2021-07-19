@@ -67,22 +67,24 @@ class YoutubePlayerFlags {
   /// Specifies the default end point of the video in seconds
   final int? endAt;
 
+  final bool useHybridComposition;
+
   /// Creates [YoutubePlayerFlags].
-  const YoutubePlayerFlags({
-    this.hideControls = false,
-    this.controlsVisibleAtStart = false,
-    this.autoPlay = true,
-    this.mute = false,
-    this.isLive = false,
-    this.hideThumbnail = false,
-    this.disableDragSeek = false,
-    this.enableCaption = true,
-    this.captionLanguage = 'en',
-    this.loop = false,
-    this.forceHD = false,
-    this.startAt = 0,
-    this.endAt,
-  });
+  const YoutubePlayerFlags(
+      {this.hideControls = false,
+      this.controlsVisibleAtStart = false,
+      this.autoPlay = true,
+      this.mute = false,
+      this.isLive = false,
+      this.hideThumbnail = false,
+      this.disableDragSeek = false,
+      this.enableCaption = true,
+      this.captionLanguage = 'en',
+      this.loop = false,
+      this.forceHD = false,
+      this.startAt = 0,
+      this.endAt,
+      this.useHybridComposition = true});
 
   /// Copies new values assigned to the [YoutubePlayerFlags].
   YoutubePlayerFlags copyWith({
@@ -99,6 +101,8 @@ class YoutubePlayerFlags {
     String? captionLanguage,
     int? startAt,
     int? endAt,
+    bool? controlsVisibleAtStart,
+    bool? useHybridComposition,
   }) {
     return YoutubePlayerFlags(
       autoPlay: autoPlay ?? this.autoPlay,
@@ -113,6 +117,9 @@ class YoutubePlayerFlags {
       forceHD: forceHD ?? this.forceHD,
       startAt: startAt ?? this.startAt,
       endAt: endAt ?? this.endAt,
+      controlsVisibleAtStart:
+          controlsVisibleAtStart ?? this.controlsVisibleAtStart,
+      useHybridComposition: useHybridComposition ?? this.useHybridComposition,
     );
   }
 }
