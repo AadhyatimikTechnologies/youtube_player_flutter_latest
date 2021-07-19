@@ -16,14 +16,14 @@ var controllerProvider;
 Future<void> showFullScreenYoutubePlayer({
   required BuildContext context,
   required YoutubePlayerController controller,
-  required EdgeInsetsGeometry actionsPadding,
+  EdgeInsetsGeometry actionsPadding = const EdgeInsets.all(8.0),
   List<Widget>? topActions,
   List<Widget>? bottomActions,
   Widget? bufferIndicator,
-  required Duration controlsTimeOut,
-  required Color liveUIColor,
+  Duration controlsTimeOut = const Duration(seconds: 3),
+  Color liveUIColor = Colors.red,
   VoidCallback? onReady,
-  required ProgressBarColors progressColors,
+  ProgressBarColors? progressColors,
   Widget? thumbnail,
 }) async {
   final TransitionRoute<Null> route = PageRouteBuilder<Null>(
@@ -32,14 +32,14 @@ Future<void> showFullScreenYoutubePlayer({
   controllerProvider = _FullScreenYoutubePlayer(
     controller: controller,
     actionsPadding: actionsPadding,
-    topActions: topActions!,
-    bottomActions: bottomActions!,
-    bufferIndicator: bufferIndicator!,
+    topActions: topActions,
+    bottomActions: bottomActions,
+    bufferIndicator: bufferIndicator,
     controlsTimeOut: controlsTimeOut,
     liveUIColor: liveUIColor,
-    onReady: onReady!,
+    onReady: onReady,
     progressColors: progressColors,
-    thumbnail: thumbnail!,
+    thumbnail: thumbnail,
   );
   SystemChrome.setEnabledSystemUIOverlays([]);
   SystemChrome.setPreferredOrientations([
@@ -141,14 +141,14 @@ class _FullScreenYoutubePlayerState extends State<_FullScreenYoutubePlayer> {
       controller: widget.controller,
       showVideoProgressIndicator: false,
       actionsPadding: widget.actionsPadding,
-      bottomActions: widget.bottomActions!,
-      bufferIndicator: widget.bufferIndicator!,
+      bottomActions: widget.bottomActions,
+      bufferIndicator: widget.bufferIndicator,
       controlsTimeOut: widget.controlsTimeOut,
       liveUIColor: widget.liveUIColor,
-      onReady: widget.onReady!,
+      onReady: widget.onReady,
       progressColors: widget.progressColors!,
-      thumbnail: widget.thumbnail!,
-      topActions: widget.topActions!,
+      thumbnail: widget.thumbnail,
+      topActions: widget.topActions,
     );
   }
 

@@ -247,15 +247,15 @@ class _YoutubePlayerState extends State<YoutubePlayer> {
           context: context,
           controller: controller,
           actionsPadding: widget.actionsPadding,
-          bottomActions: widget.bottomActions,
-          bufferIndicator: widget.bufferIndicator,
+          bottomActions: widget.bottomActions!,
+          bufferIndicator: widget.bufferIndicator!,
           controlsTimeOut: widget.controlsTimeOut,
           liveUIColor: widget.liveUIColor,
           onReady: () {
             controller.load(_videoId, startAt: _cachedPosition.inSeconds);
           },
           progressColors: widget.progressColors,
-          thumbnail: widget.thumbnail,
+          thumbnail: widget.thumbnail!,
           topActions: widget.topActions!,
         );
 
