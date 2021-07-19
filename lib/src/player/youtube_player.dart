@@ -256,7 +256,7 @@ class _YoutubePlayerState extends State<YoutubePlayer> {
           },
           progressColors: widget.progressColors,
           thumbnail: widget.thumbnail,
-          topActions: widget.topActions,
+          topActions: widget.topActions!,
         );
 
         _cachedPosition = controller.value.position;
