@@ -164,11 +164,6 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
   }) : super(YoutubePlayerValue());
 
   /// Finds [YoutubePlayerController] in the provided context.
-/*
-  factory YoutubePlayerController.of(BuildContext context) => context
-      .dependOnInheritedWidgetOfExactType<InheritedYoutubePlayer>()
-      ?.controller;
-*/
   static YoutubePlayerController? of(BuildContext context) {
     return context
         .dependOnInheritedWidgetOfExactType<InheritedYoutubePlayer>()
@@ -280,8 +275,17 @@ class YoutubePlayerController extends ValueNotifier<YoutubePlayerValue> {
   void setPlaybackRate(double rate) => _callMethod('setPlaybackRate($rate)');
 
   /// Toggles the player's full screen mode.
-  void toggleFullScreenMode() =>
-      updateValue(value.copyWith(toggleFullScreen: true));
+  void toggleFullScreenMode() {
+    updateValue(value.copyWith(isFullScreen: !value.isFullScreen));
+    if (value.isFullScreen) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    } else {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    }
+  }
 
   /// MetaData for the currently loaded or cued video.
   YoutubeMetaData get metadata => value.metaData;

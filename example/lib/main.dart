@@ -54,7 +54,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  late YoutubePlayerController _controller;
+  YoutubePlayerController? _controller;
   late TextEditingController _idController;
   late TextEditingController _seekToController;
 
@@ -83,9 +83,9 @@ class _MyHomePageState extends State<MyHomePage> {
       initialVideoId: _ids.first,
       flags: const YoutubePlayerFlags(
         mute: false,
-        autoPlay: true,
+        autoPlay: false,
         disableDragSeek: false,
-        loop: false,
+        loop: true,
         isLive: false,
         forceHD: false,
         enableCaption: true,
@@ -98,10 +98,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void listener() {
-    if (_isPlayerReady && mounted && !_controller.value.isFullScreen) {
+    if (_isPlayerReady && mounted && !_controller!.value.isFullScreen) {
       setState(() {
-        _playerState = _controller.value.playerState;
-        _videoMetaData = _controller.metadata;
+        _playerState = _controller!.value.playerState;
+        _videoMetaData = _controller!.metadata;
       });
     }
   }
@@ -109,13 +109,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void deactivate() {
     // Pauses video while navigating to next page.
-    _controller.pause();
+    _controller!.pause();
     super.deactivate();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     _idController.dispose();
     _seekToController.dispose();
     super.dispose();
@@ -129,14 +129,14 @@ class _MyHomePageState extends State<MyHomePage> {
         SystemChrome.setPreferredOrientations(DeviceOrientation.values);
       },
       player: YoutubePlayer(
-        controller: _controller,
+        controller: _controller!,
         showVideoProgressIndicator: true,
         progressIndicatorColor: Colors.blueAccent,
         topActions: <Widget>[
           const SizedBox(width: 8.0),
           Expanded(
             child: Text(
-              _controller.metadata.title,
+              _controller!.metadata.title,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18.0,
@@ -160,9 +160,9 @@ class _MyHomePageState extends State<MyHomePage> {
           _isPlayerReady = true;
         },
         onEnded: (data) {
-          _controller
+          _controller!
               .load(_ids[(_ids.indexOf(data.videoId) + 1) % _ids.length]);
-          _showSnackBar('Next Video Started!');
+          //_showSnackBar('Next Video Started!');
         },
       ),
       builder: (context, player) => Scaffold(
@@ -208,14 +208,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   _space,
                   Row(
                     children: [
-                      _text(
+                      /*text(
                         'Playback Quality',
-                        _controller.value.playbackQuality!,
-                      ),
+                        _controller!.value.playbackQuality!,
+                      )*/
                       const Spacer(),
                       _text(
                         'Playback Rate',
-                        '${_controller.value.playbackRate}x  ',
+                        '${_controller!.value.playbackRate}x  ',
                       ),
                     ],
                   ),
@@ -253,23 +253,23 @@ class _MyHomePageState extends State<MyHomePage> {
                       IconButton(
                         icon: const Icon(Icons.skip_previous),
                         onPressed: _isPlayerReady
-                            ? () => _controller.load(_ids[
-                                (_ids.indexOf(_controller.metadata.videoId) -
+                            ? () => _controller!.load(_ids[
+                                (_ids.indexOf(_controller!.metadata.videoId) -
                                         1) %
                                     _ids.length])
                             : null,
                       ),
                       IconButton(
                         icon: Icon(
-                          _controller.value.isPlaying
+                          _controller!.value.isPlaying
                               ? Icons.pause
                               : Icons.play_arrow,
                         ),
                         onPressed: _isPlayerReady
                             ? () {
-                                _controller.value.isPlaying
-                                    ? _controller.pause()
-                                    : _controller.play();
+                                _controller!.value.isPlaying
+                                    ? _controller!.pause()
+                                    : _controller!.play();
                                 setState(() {});
                               }
                             : null,
@@ -279,8 +279,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         onPressed: _isPlayerReady
                             ? () {
                                 _muted
-                                    ? _controller.unMute()
-                                    : _controller.mute();
+                                    ? _controller!.unMute()
+                                    : _controller!.mute();
                                 setState(() {
                                   _muted = !_muted;
                                 });
@@ -288,14 +288,14 @@ class _MyHomePageState extends State<MyHomePage> {
                             : null,
                       ),
                       FullScreenButton(
-                        controller: _controller,
+                        controller: _controller!,
                         color: Colors.blueAccent,
                       ),
                       IconButton(
                         icon: const Icon(Icons.skip_next),
                         onPressed: _isPlayerReady
-                            ? () => _controller.load(_ids[
-                                (_ids.indexOf(_controller.metadata.videoId) +
+                            ? () => _controller!.load(_ids[
+                                (_ids.indexOf(_controller!.metadata.videoId) +
                                         1) %
                                     _ids.length])
                             : null,
@@ -322,7 +322,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   setState(() {
                                     _volume = value;
                                   });
-                                  _controller.setVolume(_volume.round());
+                                  _controller!.setVolume(_volume.round());
                                 }
                               : null,
                         ),
@@ -409,11 +409,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   var id = YoutubePlayer.convertUrlToId(
                     _idController.text,
                   );
-                  if (action == 'LOAD') _controller.load(id!);
-                  if (action == 'CUE') _controller.cue(id!);
+                  if (action == 'LOAD') _controller!.load(id!);
+                  if (action == 'CUE') _controller!.cue(id!);
                   FocusScope.of(context).requestFocus(FocusNode());
                 } else {
-                  _showSnackBar('Source can\'t be empty!');
+                  //_showSnackBar('Source can\'t be empty!');
                 }
               }
             : null,
@@ -435,7 +435,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _showSnackBar(String message) {
+  /* void _showSnackBar(String message) {
     _scaffoldKey.currentState!.showSnackBar(
       SnackBar(
         content: Text(
@@ -454,5 +454,5 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
-  }
+  }*/
 }

@@ -20,27 +20,29 @@ class CurrentPosition extends StatefulWidget {
 }
 
 class _CurrentPositionState extends State<CurrentPosition> {
-  late YoutubePlayerController? _controller;
+  late YoutubePlayerController _controller;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _controller = YoutubePlayerController.of(context);
-    if (_controller == null) {
+    final controller = YoutubePlayerController.of(context);
+    if (controller == null) {
       assert(
-        widget.controller != null,
-        '\n\nNo controller could be found in the provided context.\n\n'
-        'Try passing the controller explicitly.',
+      widget.controller != null,
+      '\n\nNo controller could be found in the provided context.\n\n'
+          'Try passing the controller explicitly.',
       );
-      _controller = widget.controller;
+      _controller = widget.controller!;
+    } else {
+      _controller = controller;
     }
-    _controller!.removeListener(listener);
-    _controller!.addListener(listener);
+    _controller.removeListener(listener);
+    _controller.addListener(listener);
   }
 
   @override
   void dispose() {
-    _controller!.removeListener(listener);
+    _controller.removeListener(listener);
     super.dispose();
   }
 
@@ -52,9 +54,7 @@ class _CurrentPositionState extends State<CurrentPosition> {
   Widget build(BuildContext context) {
     return Text(
       durationFormatter(
-        _controller!.value.position.inMilliseconds.isFinite
-            ? _controller!.value.position.inMilliseconds
-            : 0,
+        _controller.value.position.inMilliseconds,
       ),
       style: const TextStyle(
         color: Colors.white,
@@ -77,27 +77,29 @@ class RemainingDuration extends StatefulWidget {
 }
 
 class _RemainingDurationState extends State<RemainingDuration> {
-  late YoutubePlayerController? _controller;
+  late YoutubePlayerController _controller;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _controller = YoutubePlayerController.of(context);
-    if (_controller == null) {
+    final controller = YoutubePlayerController.of(context);
+    if (controller == null) {
       assert(
-        widget.controller != null,
-        '\n\nNo controller could be found in the provided context.\n\n'
-        'Try passing the controller explicitly.',
+      widget.controller != null,
+      '\n\nNo controller could be found in the provided context.\n\n'
+          'Try passing the controller explicitly.',
       );
-      _controller = widget.controller;
+      _controller = widget.controller!;
+    } else {
+      _controller = controller;
     }
-    _controller!.removeListener(listener);
-    _controller!.addListener(listener);
+    _controller.removeListener(listener);
+    _controller.addListener(listener);
   }
 
   @override
   void dispose() {
-    _controller!.removeListener(listener);
+    _controller.removeListener(listener);
     super.dispose();
   }
 
@@ -109,12 +111,8 @@ class _RemainingDurationState extends State<RemainingDuration> {
   Widget build(BuildContext context) {
     return Text(
       "- ${durationFormatter(
-        (_controller!.metadata.duration.inMilliseconds.isFinite
-                ? _controller!.metadata.duration.inMilliseconds
-                : 0) -
-            (_controller!.value.position.inMilliseconds.isFinite
-                ? _controller!.value.position.inMilliseconds
-                : 0),
+        (_controller.metadata.duration.inMilliseconds) -
+            (_controller.value.position.inMilliseconds),
       )}",
       style: const TextStyle(
         color: Colors.white,

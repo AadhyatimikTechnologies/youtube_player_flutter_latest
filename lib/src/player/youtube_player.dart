@@ -5,8 +5,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+
 import '../enums/thumbnail_quality.dart';
 import '../utils/errors.dart';
 import '../utils/youtube_meta_data.dart';
@@ -142,8 +143,8 @@ class YoutubePlayer extends StatefulWidget {
     this.aspectRatio = 16 / 9,
     this.controlsTimeOut = const Duration(seconds: 3),
     this.bufferIndicator,
-    this.progressIndicatorColor = Colors.red,
-    this.progressColors = const ProgressBarColors(),
+    Color? progressIndicatorColor,
+    ProgressBarColors? progressColors,
     this.onReady,
     this.onEnded,
     this.liveUIColor = Colors.red,
@@ -152,13 +153,13 @@ class YoutubePlayer extends StatefulWidget {
     this.actionsPadding = const EdgeInsets.all(8.0),
     this.thumbnail,
     this.showVideoProgressIndicator = false,
-  });
+  })  : progressColors = progressColors ?? const ProgressBarColors(),
+        progressIndicatorColor = progressIndicatorColor ?? Colors.red;
 
   /// Converts fully qualified YouTube Url to video id.
   ///
   /// If videoId is passed as url then no conversion is done.
   static String? convertUrlToId(String url, {bool trimWhitespaces = true}) {
-    assert(url.isNotEmpty, 'Url cannot be empty');
     if (!url.contains("http") && (url.length == 11)) return url;
     if (trimWhitespaces) url = url.trim();
 
@@ -169,7 +170,7 @@ class YoutubePlayer extends StatefulWidget {
           r"^https:\/\/(?:www\.|m\.)?youtube(?:-nocookie)?\.com\/embed\/([_\-a-zA-Z0-9]{11}).*$"),
       RegExp(r"^https:\/\/youtu\.be\/([_\-a-zA-Z0-9]{11}).*$")
     ]) {
-      var match = exp.firstMatch(url);
+      Match? match = exp.firstMatch(url);
       if (match != null && match.groupCount >= 1) return match.group(1);
     }
 
@@ -183,8 +184,8 @@ class YoutubePlayer extends StatefulWidget {
     bool webp = true,
   }) =>
       webp
-          ? 'https://img.youtube.com/vi/$videoId/hqdefault.jpg'
-          : "https://img.youtube.com/vi/$videoId/hqdefault.jpg";
+          ? 'https://i3.ytimg.com/vi_webp/$videoId/$quality.webp'
+          : 'https://i3.ytimg.com/vi/$videoId/$quality.jpg';
 
   @override
   _YoutubePlayerState createState() => _YoutubePlayerState();
@@ -192,7 +193,7 @@ class YoutubePlayer extends StatefulWidget {
 
 class _YoutubePlayerState extends State<YoutubePlayer> {
   late YoutubePlayerController controller;
-  late InAppWebViewController _cachedWebController;
+  InAppWebViewController? _cachedWebController;
   late double _aspectRatio;
   bool _initialLoad = true;
 
@@ -213,11 +214,9 @@ class _YoutubePlayerState extends State<YoutubePlayer> {
   void listener() async {
     if (controller.value.isReady && _initialLoad) {
       _initialLoad = false;
-
       if (controller.flags.autoPlay) controller.play();
       if (controller.flags.mute) controller.mute();
-      if (widget.onReady != null) widget.onReady!();
-
+      widget.onReady?.call();
       if (controller.flags.controlsVisibleAtStart) {
         controller.updateValue(
           controller.value.copyWith(isControlsVisible: true),
@@ -240,23 +239,23 @@ class _YoutubePlayerState extends State<YoutubePlayer> {
         controller.pause();
         var _cachedPosition = controller.value.position;
         var _videoId = controller.metadata.videoId;
-        _cachedWebController = controller.value.webViewController!;
+        _cachedWebController = controller.value.webViewController;
         controller.reset();
 
         await showFullScreenYoutubePlayer(
           context: context,
           controller: controller,
           actionsPadding: widget.actionsPadding,
-          bottomActions: widget.bottomActions!,
-          bufferIndicator: widget.bufferIndicator!,
+          bottomActions: widget.bottomActions,
+          bufferIndicator: widget.bufferIndicator,
           controlsTimeOut: widget.controlsTimeOut,
           liveUIColor: widget.liveUIColor,
           onReady: () {
             controller.load(_videoId, startAt: _cachedPosition.inSeconds);
           },
           progressColors: widget.progressColors,
-          thumbnail: widget.thumbnail!,
-          topActions: widget.topActions!,
+          thumbnail: widget.thumbnail,
+          topActions: widget.topActions,
         );
 
         _cachedPosition = controller.value.position;
@@ -347,9 +346,9 @@ class _YoutubePlayerState extends State<YoutubePlayer> {
         ));
   }
 
-  Widget _buildPlayer({Widget? errorWidget}) {
+  Widget _buildPlayer({required Widget errorWidget}) {
     return AspectRatio(
-        aspectRatio: widget.aspectRatio.isFinite
+        aspectRatio: widget.aspectRatio != null
             ? widget.aspectRatio
             : _calculateAspectRatio(context),
         child: Container(
@@ -357,7 +356,7 @@ class _YoutubePlayerState extends State<YoutubePlayer> {
             children: [
               Center(
                 child: AspectRatio(
-                  aspectRatio: widget.aspectRatio.isFinite
+                  aspectRatio: widget.aspectRatio != null
                       ? widget.aspectRatio
                       : _calculateAspectRatio(context),
                   child: RawYoutubePlayer(
@@ -462,7 +461,7 @@ class _YoutubePlayerState extends State<YoutubePlayer> {
                 Center(
                   child: PlayPauseButton(),
                 ),
-              if (controller.value.hasError) errorWidget!,
+              if (controller.value.hasError) errorWidget,
             ],
           ),
         ));

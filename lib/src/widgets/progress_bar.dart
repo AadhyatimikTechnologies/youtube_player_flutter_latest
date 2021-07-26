@@ -70,7 +70,7 @@ class ProgressBar extends StatefulWidget {
 }
 
 class _ProgressBarState extends State<ProgressBar> {
-  YoutubePlayerController? _controller;
+  late YoutubePlayerController _controller;
 
   Offset _touchPoint = Offset.zero;
 
@@ -83,32 +83,34 @@ class _ProgressBarState extends State<ProgressBar> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _controller = YoutubePlayerController.of(context)!;
-    if (_controller == null) {
+    final controller = YoutubePlayerController.of(context);
+    if (controller == null) {
       assert(
         widget.controller != null,
         '\n\nNo controller could be found in the provided context.\n\n'
         'Try passing the controller explicitly.',
       );
       _controller = widget.controller!;
+    } else {
+      _controller = controller;
     }
-    _controller!.addListener(positionListener);
+    _controller.addListener(positionListener);
     positionListener();
   }
 
   @override
   void dispose() {
-    _controller!.removeListener(positionListener);
+    _controller.removeListener(positionListener);
     super.dispose();
   }
 
   void positionListener() {
-    var _totalDuration = _controller!.metadata.duration.inMilliseconds;
-    if (mounted && !_totalDuration.isFinite && _totalDuration != 0) {
+    var _totalDuration = _controller.metadata.duration.inMilliseconds;
+    if (mounted && !_totalDuration.isNaN && _totalDuration != 0) {
       setState(() {
         _playedValue =
-            _controller!.value.position.inMilliseconds / _totalDuration;
-        _bufferedValue = _controller!.value.buffered;
+            _controller.value.position.inMilliseconds / _totalDuration;
+        _bufferedValue = _controller.value.buffered;
       });
     }
   }
@@ -127,30 +129,30 @@ class _ProgressBarState extends State<ProgressBar> {
   }
 
   void _seekToRelativePosition(Offset globalPosition) {
-    final RenderBox box = context.findRenderObject() as RenderBox;
+    final box = context.findRenderObject() as RenderBox;
     _touchPoint = box.globalToLocal(globalPosition);
     _checkTouchPoint();
     final relative = _touchPoint.dx / box.size.width;
-    _position = _controller!.metadata.duration * relative;
-    _controller!.seekTo(_position, allowSeekAhead: false);
+    _position = _controller.metadata.duration * relative;
+    _controller.seekTo(_position, allowSeekAhead: false);
   }
 
   void _dragEndActions() {
-    _controller!.updateValue(
-      _controller!.value.copyWith(isControlsVisible: false, isDragging: false),
+    _controller.updateValue(
+      _controller.value.copyWith(isControlsVisible: false, isDragging: false),
     );
-    _controller!.seekTo(_position, allowSeekAhead: true);
+    _controller.seekTo(_position, allowSeekAhead: true);
     setState(() {
       _touchDown = false;
     });
-    _controller!.play();
+    _controller.play();
   }
 
   Widget _buildBar() {
     return GestureDetector(
       onHorizontalDragDown: (details) {
-        _controller!.updateValue(
-          _controller!.value.copyWith(isControlsVisible: true, isDragging: true),
+        _controller.updateValue(
+          _controller.value.copyWith(isControlsVisible: true, isDragging: true),
         );
         _seekToRelativePosition(details.globalPosition);
         setState(() {
@@ -175,7 +177,7 @@ class _ProgressBarState extends State<ProgressBar> {
             handleRadius: 7.0,
             playedValue: _playedValue,
             bufferedValue: _bufferedValue,
-            colors: widget.colors!,
+            colors: widget.colors,
             touchDown: _touchDown,
             themeData: Theme.of(context),
           ),
@@ -190,22 +192,22 @@ class _ProgressBarState extends State<ProgressBar> {
 }
 
 class _ProgressBarPainter extends CustomPainter {
-  final double? progressWidth;
-  final double? handleRadius;
-  final double? playedValue;
-  final double? bufferedValue;
+  final double progressWidth;
+  final double handleRadius;
+  final double playedValue;
+  final double bufferedValue;
   final ProgressBarColors? colors;
-  final bool? touchDown;
-  final ThemeData? themeData;
+  final bool touchDown;
+  final ThemeData themeData;
 
   _ProgressBarPainter({
-    this.progressWidth,
-    this.handleRadius,
-    this.playedValue,
-    this.bufferedValue,
+    required this.progressWidth,
+    required this.handleRadius,
+    required this.playedValue,
+    required this.bufferedValue,
     this.colors,
-    this.touchDown,
-    this.themeData,
+    required this.touchDown,
+    required this.themeData,
   });
 
   @override
@@ -220,26 +222,26 @@ class _ProgressBarPainter extends CustomPainter {
     final paint = Paint()
       ..isAntiAlias = true
       ..strokeCap = StrokeCap.square
-      ..strokeWidth = progressWidth!;
+      ..strokeWidth = progressWidth;
 
     final centerY = size.height / 2.0;
-    final barLength = size.width - handleRadius! * 2.0;
+    final barLength = size.width - handleRadius * 2.0;
 
-    final startPoint = Offset(handleRadius!, centerY);
-    final endPoint = Offset(size.width - handleRadius!, centerY);
+    final startPoint = Offset(handleRadius, centerY);
+    final endPoint = Offset(size.width - handleRadius, centerY);
     final progressPoint =
-        Offset(barLength * playedValue! + handleRadius!, centerY);
+        Offset(barLength * playedValue + handleRadius, centerY);
     final secondProgressPoint =
-        Offset(barLength * bufferedValue! + handleRadius!, centerY);
+        Offset(barLength * bufferedValue + handleRadius, centerY);
 
     paint.color =
-        colors?.backgroundColor ?? themeData!.accentColor.withOpacity(0.38);
+        colors?.backgroundColor ?? themeData.accentColor.withOpacity(0.38);
     canvas.drawLine(startPoint, endPoint, paint);
 
     paint.color = colors?.bufferedColor ?? Colors.white70;
     canvas.drawLine(startPoint, secondProgressPoint, paint);
 
-    paint.color = colors?.playedColor ?? themeData!.accentColor;
+    paint.color = colors?.playedColor ?? themeData.accentColor;
     canvas.drawLine(startPoint, progressPoint, paint);
 
     final handlePaint = Paint()..isAntiAlias = true;
@@ -247,14 +249,14 @@ class _ProgressBarPainter extends CustomPainter {
     handlePaint.color = Colors.transparent;
     canvas.drawCircle(progressPoint, centerY, handlePaint);
 
-    final _handleColor = colors?.handleColor ?? themeData!.accentColor;
+    final _handleColor = colors?.handleColor ?? themeData.accentColor;
 
-    if (touchDown!) {
+    if (touchDown) {
       handlePaint.color = _handleColor.withOpacity(0.4);
-      canvas.drawCircle(progressPoint, handleRadius! * 3, handlePaint);
+      canvas.drawCircle(progressPoint, handleRadius * 3, handlePaint);
     }
 
     handlePaint.color = _handleColor;
-    canvas.drawCircle(progressPoint, handleRadius!, handlePaint);
+    canvas.drawCircle(progressPoint, handleRadius, handlePaint);
   }
 }

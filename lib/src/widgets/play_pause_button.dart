@@ -46,9 +46,9 @@ class _PlayPauseButtonState extends State<PlayPauseButton>
     final controller = YoutubePlayerController.of(context);
     if (controller == null) {
       assert(
-        widget.controller != null,
-        '\n\nNo controller could be found in the provided context.\n\n'
-        'Try passing the controller explicitly.',
+      widget.controller != null,
+      '\n\nNo controller could be found in the provided context.\n\n'
+          'Try passing the controller explicitly.',
       );
       _controller = widget.controller!;
     } else {

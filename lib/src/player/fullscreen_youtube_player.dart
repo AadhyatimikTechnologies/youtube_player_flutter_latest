@@ -22,8 +22,8 @@ Future<void> showFullScreenYoutubePlayer({
   Widget? bufferIndicator,
   Duration controlsTimeOut = const Duration(seconds: 3),
   Color liveUIColor = Colors.red,
-  VoidCallback? onReady,
-  ProgressBarColors? progressColors,
+  final VoidCallback? onReady,
+  ProgressBarColors progressColors = const ProgressBarColors(),
   Widget? thumbnail,
 }) async {
   final TransitionRoute<Null> route = PageRouteBuilder<Null>(
@@ -76,6 +76,7 @@ Widget _buildFullScreenVideo(
     BuildContext context, Animation<double> animation, var controllerProvider) {
   return Scaffold(
     //resizeToAvoidBottomPadding: false,
+    resizeToAvoidBottomInset: false,
     body: Container(
       alignment: Alignment.center,
       color: Colors.black,
@@ -95,7 +96,7 @@ class _FullScreenYoutubePlayer extends StatefulWidget {
   final Widget? bufferIndicator;
 
   /// {@macro youtube_player_flutter.progressColors}
-  final ProgressBarColors? progressColors;
+  final ProgressBarColors progressColors;
 
   /// {@macro youtube_player_flutter.onReady}
   final VoidCallback? onReady;
@@ -120,7 +121,7 @@ class _FullScreenYoutubePlayer extends StatefulWidget {
     required this.controller,
     this.controlsTimeOut = const Duration(seconds: 3),
     this.bufferIndicator,
-    this.progressColors,
+    this.progressColors = const ProgressBarColors(),
     this.onReady,
     this.liveUIColor = Colors.red,
     this.topActions,
@@ -146,7 +147,7 @@ class _FullScreenYoutubePlayerState extends State<_FullScreenYoutubePlayer> {
       controlsTimeOut: widget.controlsTimeOut,
       liveUIColor: widget.liveUIColor,
       onReady: widget.onReady,
-      progressColors: widget.progressColors!,
+      progressColors: widget.progressColors,
       thumbnail: widget.thumbnail,
       topActions: widget.topActions,
     );
